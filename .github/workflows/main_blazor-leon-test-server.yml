@@ -54,4 +54,4 @@ jobs:
           app-name: 'blazor-leon-test-server'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_3A553966470649CCB1AB2DB13F9C9982 }}
-          package: .
+          package: ./FirstBlazorApp/
