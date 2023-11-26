@@ -6,7 +6,7 @@ name: Build and deploy ASP.Net Core app to Azure Web App - blazor-leon-test-serv
 on:
   push:
     branches:
-      - main/FirstBlazorApp
+      - main
   workflow_dispatch: 
 
 jobs:
