@@ -7,7 +7,7 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch: 
+  workflow_dispatch:
 
 jobs:
   build:
@@ -23,10 +23,10 @@ jobs:
           include-prerelease: true
 
       - name: Build with dotnet
-        run: dotnet build --configuration Release
+        run: dotnet build --configuration Release FirstBlazorApp/  # Adjust the path
 
       - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp FirstBlazorApp/  # Adjust the path
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v3
@@ -54,4 +54,4 @@ jobs:
           app-name: 'blazor-leon-test-server'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_3A553966470649CCB1AB2DB13F9C9982 }}
-          package: ./FirstBlazorApp/
+          package: .  # Adjust the path
