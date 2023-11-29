@@ -1,8 +1,18 @@
 ﻿@layout Layout.SecondLayout
 @page "/arjen"
+@attribute [StreamRendering]
 
 <PageTitle>Arjen's coole pagina</PageTitle>
 
 <h3>Arjen's coole pagina</h3>
 <p>Dit is de pagina van de enige echte Arjen van Klaveren. De dingen die je hierop waarneemd zijn wonderbaarlijk en zeker niet ordinair.</p>
 
+<button class="btn btn-primary" @onclick="Test">Click me</button>
+
+@code
+{
+    void Test()
+    {
+        Console.WriteLine("Deze button werkt!!");
+    }
+}

@@ -1,4 +1,5 @@
 using FirstBlazorApp.Components;
+using MySqlConnector;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,3 +26,5 @@ app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
 app.Run();
+
+
