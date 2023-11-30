@@ -1,0 +1,72 @@
+﻿@page "/game"
+
+@inject NavigationManager NavigationManager
+
+@using Blazor.Extensions
+@using Blazor.Extensions.Canvas
+@using Blazor.Extensions.Canvas.Canvas2D
+
+@inject IJSRuntime JsRuntime;
+
+<h1>Example 1 - Drawing on a canvas</h1>
+<div id="canvasContainer">
+    <BECanvas @ref="_canvasReference" Width="550" Height="550"></BECanvas>
+</div>
+
+<img @ref="_myImage" src="Images/testImage.jpg" hidden />
+
+@code {
+    BECanvasComponent _canvasReference = null;
+    Canvas2DContext _canvasContext = null;
+    ElementReference _myImage;
+
+    float xPosition = 175;
+    float yPosition = 100;
+    float xSpeed = 5;
+    float ySpeed = 5;
+    float imgWidth = 100;
+    float imgHeight = 100;
+
+    public bool CheckCorrectPage()
+    {
+        bool returnBool = false;
+        string page = new Uri(NavigationManager.Uri).AbsolutePath;
+        if (page == "/game") returnBool = true;
+        return returnBool;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+
+        _canvasContext = await _canvasReference.CreateCanvas2DAsync();
+
+        await JsRuntime.InvokeAsync<object>("initGame", DotNetObjectReference.Create(this));
+    }
+
+    [JSInvokable]
+    public async ValueTask GameLoop(float timeStamp, int width, int height)
+    {
+        if (!CheckCorrectPage()) { await JsRuntime.InvokeAsync<object>("stopGame", DotNetObjectReference.Create(this)); return; }
+
+        await _canvasContext.BeginBatchAsync();
+        await _canvasContext.ClearRectAsync(0, 0, width, height);
+        await _canvasContext.SetFillStyleAsync("lightblue");
+        await _canvasContext.FillRectAsync(0, 0, width, height);
+
+        await _canvasContext.DrawImageAsync(_myImage, xPosition - (imgWidth / 2), yPosition - (imgHeight / 2), imgWidth, imgHeight);
+
+        await _canvasContext.EndBatchAsync();
+
+        xPosition += xSpeed;
+        yPosition += ySpeed;
+
+        if (xPosition + (imgWidth / 2) > width || xPosition - (imgWidth / 2) < 0)
+            xSpeed *= -1.1f;
+
+        if (yPosition + (imgHeight / 2) > height || yPosition - (imgHeight / 2) < 0)
+            ySpeed *= -1.1f;
+    }
+
+
+}

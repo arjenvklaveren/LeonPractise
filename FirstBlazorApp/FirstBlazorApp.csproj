@@ -8,9 +8,11 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\bootstrap\" />
+    <Folder Include="wwwroot\Images\" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Blazor.Extensions.Canvas" Version="1.1.1" />
     <PackageReference Include="Dapper" Version="2.1.24" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
