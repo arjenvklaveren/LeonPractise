@@ -1,0 +1,137 @@
+﻿<PageTitle>GameCanvas</PageTitle>
+
+@using Blazor.Extensions
+@using Blazor.Extensions.Canvas
+@using Blazor.Extensions.Canvas.Canvas2D
+@using ML_Game.GameScreens;
+@using System.Numerics;
+
+@inject IJSRuntime JsRuntime;
+
+<div id="gameCanvasContainer" @onkeypress="OnKeyPress" @onmousemove="OnMouseMove" @onmousedown="OnMouseDown">
+    <div id="imageContainer"></div>
+    <BECanvas @ref="_canvasReference" Width="@Width" Height="@Height"></BECanvas>
+</div>
+
+<script> 
+    var canvas = document.getElementById('gameCanvasContainer').getElementsByTagName('canvas');
+    var canvasContext;
+
+    function gameLoop(timeStamp) {
+        if (document.getElementById('gameCanvasContainer') != null) {
+            game.instance.invokeMethodAsync('GameLoop', timeStamp, canvas[0].width, canvas[0].height);
+            window.requestAnimationFrame(gameLoop);
+        }
+    }
+
+    window.initGame = (instance) => {
+        canvas = document.getElementById('gameCanvasContainer').getElementsByTagName('canvas');
+        canvasContext = canvas[0].getContext("2d");
+
+        window.game = {
+            instance: instance
+        };
+
+        canvas[0].onblur = (e) => {
+            canvas[0].focus();
+        };
+        canvas[0].tabIndex = 0;
+        canvas[0].focus();
+
+        window.requestAnimationFrame(gameLoop);
+    };
+
+    renderImage = (imageSource, posX, posY, sizeX, sizeY) => {
+        var image = new Image();
+        image.src = imageSource;
+        canvasContext.drawImage(image, posX, posY, sizeX, sizeY);
+    }
+
+    getMousePosCanvas = (event) => { 
+        const rect = canvas[0].getBoundingClientRect();
+        const x = parseInt(event.clientX - rect.left);
+        const y = parseInt(event.clientY - rect.top);      
+        return [ x, y ];
+    }
+</script>
+
+@code {
+    [Parameter] public int Height { get; set; } = 550;
+    [Parameter] public int Width { get; set; } = 550;
+
+    BECanvasComponent _canvasReference = null;
+    Canvas2DContext _canvasContext = null;
+
+    GameScreen _currentScreen = null;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender) return;
+        _canvasContext = await _canvasReference.CreateCanvas2DAsync();
+        await JsRuntime.InvokeAsync<object>("initGame", DotNetObjectReference.Create(this));
+        SetGameScreen(new ML_Game.GameScreens.MainMenu());
+    }
+
+    [JSInvokable]
+    public async ValueTask GameLoop(float timeStamp, int width, int height)
+    {
+        //render canvas background
+        await _canvasContext.BeginBatchAsync();
+        await _canvasContext.ClearRectAsync(0, 0, width, height);
+        await _canvasContext.SetFillStyleAsync("black");
+        await _canvasContext.FillRectAsync(0, 0, width, height);
+        await _canvasContext.EndBatchAsync();
+
+        //test render
+        await _canvasContext.BeginBatchAsync();
+        await _canvasContext.ClearRectAsync(200, 300, 100, 100);
+        await _canvasContext.SetFillStyleAsync("rgb(0,255,0)");
+        await _canvasContext.FillRectAsync(200, 300, 100, 100);
+        //await _canvasContext.EndBatchAsync();
+
+        //render current screen
+        //await _canvasContext.BeginBatchAsync();
+        await _currentScreen.Draw(_canvasContext);
+        await _canvasContext.EndBatchAsync();
+
+        //update current screen
+        _currentScreen.Update();
+    }
+
+    void OnKeyPress(KeyboardEventArgs args)
+    {
+        //Console.WriteLine($"Key pressed: {args.Code}");
+
+        if (args.Code == "Digit1")
+        {
+            SetGameScreen(new ML_Game.GameScreens.CreateEnvironment());
+        }
+        if (args.Code == "Digit2")
+        {
+            SetGameScreen(new ML_Game.GameScreens.MainMenu());
+        }
+    }
+
+    async Task OnMouseMove(MouseEventArgs e)
+    {
+        int[] mousePos = await JsRuntime.InvokeAsync<int[]>("getMousePosCanvas", e);
+        Vector2 mousePosVector = new Vector2(mousePos[0], mousePos[1]);
+    }
+
+    void OnMouseDown(MouseEventArgs e)
+    {
+        //Console.WriteLine(e.Button);
+    }
+
+    public void RenderImageToCanvas(string image, Vector2 position, Vector2 size)
+    {
+        JsRuntime.InvokeAsync<object>("renderImage", image, position.X, position.Y, size.X, size.Y);
+    }
+
+    public void SetGameScreen(GameScreen screen)
+    {
+        _currentScreen = screen;
+        _currentScreen.SetGameCanvas(this);
+    }
+    public GameScreen GetGameScreen()  { return _currentScreen; }
+}

@@ -1,18 +1,44 @@
 ﻿@layout Layout.SecondLayout
 @page "/arjen"
 @attribute [StreamRendering]
+@using FirstBlazorApp.Components.ML_Game;
 
-<PageTitle>Arjen's coole pagina</PageTitle>
+<PageTitle>Arjen</PageTitle>
 
-<h3>Arjen's coole pagina</h3>
-<p>Dit is de pagina van de enige echte Arjen van Klaveren. De dingen die je hierop waarneemd zijn wonderbaarlijk en zeker niet ordinair.</p>
+<br/>
+<h4>Arjen (Arjen van Klaveren)</h4> 
+<hr/>
+<h5>Information:</h5>
+<p>
+    <b>Personal</b> <br />
+    Member since: 18/05/2022  <br />
+    Email adress: arjenvklaveren@gmail.com <br />
+    Full name: Arjen van Klaveren <br />
+    Country/Language: The Netherlands <br />
+</p>
 
-<button class="btn btn-primary" @onclick="Test">Click me</button>
+<p>
+    <b>Company</b> <br />
+    Name: TechMechPlek Inc.  <br />
+    Country of Origin: The Netherlands <br />
+</p>
 
-@code
-{
-    void Test()
-    {
-        Console.WriteLine("Deze button werkt!!");
-    }
+<p>
+    <b>Sales</b> <br />
+    Assets uploaded: 21  <br />
+    Items sold: 841 <br />
+    Profit: $94823 <br />
+</p>
+
+<p>
+    <b>Confirmed competences</b> <br />
+    Creating 3D assets: Great  <br />
+    Customer service: Good <br />
+    Optimising data: Perfect <br />
+    Maintaining machine learning logic: Neutral <br />
+    Calculating cost and profit: Bad <br />
+</p>
+
+@code {
+
 }

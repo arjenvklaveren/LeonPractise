@@ -17,34 +17,6 @@
 <body>
     <Routes @rendermode=RenderMode.InteractiveServer />
     <script src="_framework/blazor.web.js"></script>
-
-    <script>
-        var isPlaying = false;
-
-        function gameLoop(timeStamp) {
-            if (!isPlaying) return;
-            window.requestAnimationFrame(gameLoop);
-            game.instance.invokeMethodAsync('GameLoop', timeStamp, game.canvases[0].width, game.canvases[0].height);
-        }
-
-        window.initGame = (instance) => {
-            var canvasContainer = document.getElementById('canvasContainer'),
-                canvases = canvasContainer.getElementsByTagName('canvas') || [];
-
-            window.game = {
-                instance: instance,
-                canvases: canvases
-            };
-
-            isPlaying = true;
-            window.requestAnimationFrame(gameLoop);
-        };
-
-        window.stopGame = (instance) => {
-            isPlaying = false;
-            window.game = null;
-        }
-    </script>
 </body>
 
 </html>
